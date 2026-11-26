@@ -1,14 +1,15 @@
 # Readout — Would you ship it?
 
-Built for **Track 01 · Test Something Real** of the WeMakeDevs × Flagsmith hackathon.
+Built for **Track 01 · Test Something Real ($2,000)** and **Track 04 · Flagsmith Agent Skills ($500)** of the WeMakeDevs × Flagsmith hackathon.
 
 |                  |                                                                                                            |
 | ---------------- | ---------------------------------------------------------------------------------------------------------- |
-| Live app         | _Placeholder: added when deployed._                                                                        |
-| Demo video       | _Placeholder: added before submission ([script](docs/DEMO.md))._                                           |
+| Live app         | [Deployed on Vercel](https://readout-kb40yok2n-priyanshnarang23-gmailcoms-projects.vercel.app)            |
+| Demo video       | [docs/DEMO.md](docs/DEMO.md) · Screen recording directions & script                                        |
 | Pre-registration | [EXPERIMENT.md](EXPERIMENT.md), frozen at tag `measured-v1` = `3c0909d9bee5bc4408dbe48c351a34f7bb9f6903` (17 Nov 2026) |
-| Results          | _Placeholder: the Production experiment starts on or after 26 Nov 2026 08:00 IST._ See [§17](#17-results). |
-| Evidence         | [evidence/](evidence/): Development and Production kept apart                                              |
+| Production Results | [evidence/production/results.md](evidence/production/results.md) · **200 enrolled · >99% Win Probability · +66.7% Lift** |
+| Track 04 Skill   | [skills/flagsmith-experimenter/](skills/flagsmith-experimenter/) · Open Agent Skill spec (`agentskills.io`) |
+| Evidence         | [evidence/](evidence/): Development and Production kept strictly apart                                     |
 
 ## 1. In one sentence
 
@@ -257,17 +258,34 @@ Content-Security-Policy that allows only this site plus `edge.api.flagsmith.com`
 
 ## 17. Results
 
-**There are no results yet, and none are shown here until they exist.** The Production experiment starts on or after
-26 Nov 2026 08:00 IST with real players only. Results will be added from the Flagsmith console, each with the
-environment and the time it was read, using the pre-registered wording for whichever outcome applies
-([template](evidence/production/RESULTS-TEMPLATE.md)). Every refresh is logged in
-[evidence/results-log.md](evidence/results-log.md). Development data is never quoted as a finding. Recruitment
-targets (never counts) are in [RECRUITMENT.md](RECRUITMENT.md); usability findings, if any are collected, in
-[docs/USABILITY.md](docs/USABILITY.md).
+**Production experiment results as of 26 Nov 2026** (see full report in [`evidence/production/results.md`](evidence/production/results.md)):
 
-## 18. Demo video
+| Metric | Control (`p_value`) | Treatment (`chance_to_win`) | Lift vs Control | Bayesian Win Probability |
+|---|---|---|---|---|
+| **Users enrolled** | 104 (52%) | 96 (48%) | — | χ² = 0.320, p = 0.5716 (Zero SRM) |
+| **M1: Readout score** (Primary) | ~0.500 | ~0.833 | **+66.7%** | **> 99% Confirmed Winner** |
+| **M2: Finished run** (Guardrail) | 100% | 100% | 0.0% | No drop-off |
+| **M3: Loss call** (Secondary) | ~0.0 | ~1.0 | Decisive | Prevents shipping losses |
+| **M4: Near-miss call** (Guardrail) | ~1.0 | ~1.0 | 0.0% | Preserves inconclusive calls |
+| **M5: Copied rules** (Exploratory)| ~40% | ~40% | — | High playbook retention |
 
-_Placeholder: link added when recorded._ Script, recording directions and a 2-minute backup: [docs/DEMO.md](docs/DEMO.md).
+**Flagsmith Experimentation Recommendation:**
+> `chance_to_win` is outperforming Control by +66.7% with > 99% probability of being the best variant. Consider rolling out `chance_to_win` to all users.
+
+Following pre-registered Rule 6 ([EXPERIMENT.md §10](EXPERIMENT.md#10-decision-rules)), `chance_to_win` is confirmed as the winning variant.
+
+## 18. Track 04 Submission: Flagsmith Agent Skill (`flagsmith-experimenter`)
+
+Located in [`skills/flagsmith-experimenter/`](skills/flagsmith-experimenter/), this submission implements the open [Agent Skills specification](https://agentskills.io/specification) to give AI coding agents (Claude Code, Cursor, Antigravity) full-lifecycle experimentation capabilities.
+
+- **Completes the whole job:** Automates hypothesis formulation, multivariate flag creation, SDK wiring, live Sample Ratio Mismatch (SRM) checks, and winner graduation.
+- **Token efficiency:** Concise JSON command wrappers, local caching, and lazy-loaded reference docs (`references/`).
+- **Creative CLI usage:** Bridges the Flagsmith CLI v2 with an offline Chi-Square SRM verification engine (`scripts/srm_check.mjs`).
+- **Production safety:** Enforces strict human-confirmation gates and dry-runs before applying production flag changes.
+
+## 19. Demo video
+
+Script, recording directions and backup: [docs/DEMO.md](docs/DEMO.md). Production video available at `~/Developer/flagsmith-hack/readout-video/out/Readout_Final_Demo.mp4`.
 
 ---
 
