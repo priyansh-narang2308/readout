@@ -1,0 +1,21 @@
+{
+  "tool": "flagsmith-attach-dev-metrics",
+  "mode": "dry-run",
+  "environment": "<id>",
+  "started": "2026-11-17T06:43:56.190Z",
+  "steps": [
+    {
+      "at": "2026-11-17T06:43:56.854Z",
+      "request": "GET /environments/<env-key>/",
+      "body": null,
+      "status": 401,
+      "response": {
+        "detail": "Valid Master API Key not found."
+      }
+    }
+  ],
+  "stopped": "authentication/permission failed (401) on GET /environments/<env-key>/",
+  "stopDetail": {
+    "detail": "Valid Master API Key not found."
+  }
+}
