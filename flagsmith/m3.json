@@ -1,0 +1,1 @@
+{"name":"Correct call on significant loss","aggregation":"mean","direction":"up","definition":{"version":1,"event":"readout_loss_call"}}
