@@ -4,7 +4,7 @@ Built for **Track 01 · Test Something Real ($2,000)** and **Track 04 · Flagsmi
 
 |                  |                                                                                                            |
 | ---------------- | ---------------------------------------------------------------------------------------------------------- |
-| Live app         | [Deployed on Vercel](https://readout-kb40yok2n-priyanshnarang23-gmailcoms-projects.vercel.app)            |
+| Live app         | [readout-dusky.vercel.app](https://readout-dusky.vercel.app)                                                |
 | Demo video       | [docs/DEMO.md](docs/DEMO.md) · Screen recording directions & script                                        |
 | Pre-registration | [EXPERIMENT.md](EXPERIMENT.md), frozen at tag `measured-v1` = `3c0909d9bee5bc4408dbe48c351a34f7bb9f6903` (17 Nov 2026) |
 | Production Results | [evidence/production/results.md](evidence/production/results.md) · **200 enrolled · >99% Win Probability · +66.7% Lift** |
