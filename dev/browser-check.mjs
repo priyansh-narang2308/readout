@@ -74,18 +74,22 @@ const consoleErrors = []
 const cspViolations = []
 
 // ---------- the server: Vite dev, or a production build served like the host ----------
+// Every Flagsmith request is faked below, so the app only needs *a* key to take the measured path. A fixed placeholder
+// makes the check behave the same with or without a local .env (CI has none) and never sends a real key anywhere.
+const CHECK_ENV = { ...process.env, VITE_FLAGSMITH_ENV_KEY: 'BrowserCheckPlaceholderKey01' }
+
 async function startServer() {
   if (TARGET === 'prod') {
     const out = mkdtempSync(join(tmpdir(), 'readout-prod-'))
     const b = spawnSync('npx', ['vite', 'build', '--outDir', out, '--emptyOutDir'], {
       encoding: 'utf8',
-      env: { ...process.env, VITE_FLAGSMITH_ENV_NAME: 'production' },
+      env: { ...CHECK_ENV, VITE_FLAGSMITH_ENV_NAME: 'production' },
     })
     if (b.status !== 0) throw new Error(`production build failed: ${b.stderr || b.stdout}`)
     const server = await serveDist(out, PORT)
     return { kill: () => (server.close(), rmSync(out, { recursive: true, force: true })) }
   }
-  const proc = spawn('npx', ['vite', '--port', String(PORT), '--strictPort'], { stdio: ['ignore', 'pipe', 'pipe'] })
+  const proc = spawn('npx', ['vite', '--port', String(PORT), '--strictPort'], { stdio: ['ignore', 'pipe', 'pipe'], env: CHECK_ENV })
   const end = Date.now() + 30000
   while (Date.now() < end) {
     try {
