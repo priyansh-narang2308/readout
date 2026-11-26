@@ -274,14 +274,18 @@ Content-Security-Policy that allows only this site plus `edge.api.flagsmith.com`
 
 Following pre-registered Rule 6 ([EXPERIMENT.md §10](EXPERIMENT.md#10-decision-rules)), `chance_to_win` is confirmed as the winning variant.
 
-## 18. Track 04 Submission: Flagsmith Agent Skill (`flagsmith-experimenter`)
+## 18. Track 04 Submission: Complete Flagsmith Agent Skills Suite
 
-Located in [`skills/flagsmith-experimenter/`](skills/flagsmith-experimenter/), this submission implements the open [Agent Skills specification](https://agentskills.io/specification) to give AI coding agents (Claude Code, Cursor, Antigravity) full-lifecycle experimentation capabilities.
+Located in [`skills/`](skills/) (with unified runner [`scripts/flagsmith-agent-suite.mjs`](scripts/flagsmith-agent-suite.mjs)), this submission implements **all 5 official workflows** from the hackathon prompt conforming to the open [Agent Skills specification](https://agentskills.io/specification):
 
-- **Completes the whole job:** Automates hypothesis formulation, multivariate flag creation, SDK wiring, live Sample Ratio Mismatch (SRM) checks, and winner graduation.
-- **Token efficiency:** Concise JSON command wrappers, local caching, and lazy-loaded reference docs (`references/`).
-- **Creative CLI usage:** Bridges the Flagsmith CLI v2 with an offline Chi-Square SRM verification engine (`scripts/srm_check.mjs`).
-- **Production safety:** Enforces strict human-confirmation gates and dry-runs before applying production flag changes.
+1. **`flagsmith-ship-safely`:** A code change to a flagged, gradual canary rollout (0% → 10% → 50% → 100%) with an instant circuit-breaker rollback.
+2. **`flagsmith-flag-debt`:** Finds stale flags (>30 days), removes dead code branches, opens a cleanup PR, and archives flags in Flagsmith.
+3. **`flagsmith-kill-switch`:** Emergency incident containment: traces a broken feature to its flag, kills it via Edge API (< 200ms), and logs an incident audit trail.
+4. **`flagsmith-experimenter`:** Pre-registers hypothesis & metrics, runs offline Chi-Square Sample Ratio Mismatch (SRM) checks, evaluates Bayesian win probability, and graduates the winner to 100%.
+5. **`flagsmith-migrator`:** Inventories competitor or homegrown flags (LaunchDarkly, Unleash, env vars), generates migration manifests, provisions them in Flagsmith, and rewrites SDK imports.
+
+- **Unified CLI Runner:** `node scripts/flagsmith-agent-suite.mjs <workflow> [--dry-run]`
+- **Token Efficiency:** Achieves **81%–88% token reduction** (~783 tokens for a complete lifecycle run vs ~4,500 tokens for naive agents). Full benchmark in [`skills/flagsmith-experimenter/DEMO_RUN.md`](skills/flagsmith-experimenter/DEMO_RUN.md).
 
 ## 19. Demo video
 
