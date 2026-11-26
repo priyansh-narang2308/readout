@@ -323,6 +323,8 @@ async function measuredJourney(browser) {
 // ---------- 2. every page at every viewport: axe, horizontal scroll ----------
 // ---------- 1b. two tabs of one browser (one context = shared localStorage and Web Locks) ----------
 async function twoTabs(browser) {
+  // Only one tab is in front; headless Chrome on Linux pauses animation frames in the other, so Playwright's
+  // stability wait never finishes there. The concurrent clicks below skip that wait (force) but stay real mouse input.
   const vp = VIEWPORTS['desktop 1280×800']
   const { context, net } = await newContext(browser, vp, { permissions: ['clipboard-read', 'clipboard-write'] })
   const [a, b] = [await context.newPage(), await context.newPage()]
@@ -331,7 +333,7 @@ async function twoTabs(browser) {
 
   // Start in both tabs inside the same Flagsmith round trip (held 1.5 s, under the 4 s gate).
   net.identityDelay = 1500
-  await Promise.all([a, b].map((p) => p.getByRole('button', { name: 'Start the challenge' }).click()))
+  await Promise.all([a, b].map((p) => p.getByRole('button', { name: 'Start the challenge' }).click({ force: true })))
   await Promise.all([a, b].map((p) => p.waitForURL('**/challenge')))
   net.identityDelay = 0
   const uid = await a.evaluate(() => localStorage.getItem('readout.uid'))
@@ -345,7 +347,7 @@ async function twoTabs(browser) {
   await settle(a)
   await a.keyboard.press('1')
   await b.keyboard.press('2')
-  await Promise.all([a.locator('[data-lock]').click(), b.locator('[data-lock]').click()])
+  await Promise.all([a.locator('[data-lock]').click({ force: true }), b.locator('[data-lock]').click({ force: true })])
   await a.waitForTimeout(800)
   const after1 = await storedAttempt(a)
   const first = after1?.order?.[0]
@@ -370,7 +372,7 @@ async function twoTabs(browser) {
   const sixth = await Promise.all([a, b].map((p) => p.locator('[data-scenario]').getAttribute('data-scenario')))
   await a.keyboard.press('3')
   await b.keyboard.press('4')
-  await Promise.all([a.locator('[data-lock]').click(), b.locator('[data-lock]').click()])
+  await Promise.all([a.locator('[data-lock]').click({ force: true }), b.locator('[data-lock]').click({ force: true })])
   await Promise.all([a, b].map((p) => p.waitForURL('**/readout', { timeout: 15000 })))
   await a.waitForTimeout(1500)
   const done = await storedAttempt(a)
@@ -387,7 +389,7 @@ async function twoTabs(browser) {
   await Promise.all([a, b].map((p) => p.goto(`${BASE}/readout/summary`)))
   const copy = (p) => p.getByRole('button', { name: /Copy as Markdown/ })
   await Promise.all([a, b].map((p) => copy(p).waitFor()))
-  await Promise.all([copy(a).click(), copy(b).click()])
+  await Promise.all([copy(a).click({ force: true }), copy(b).click({ force: true })])
   const end = Date.now() + 5000
   while (Date.now() < end && scores('readout_rules_copied') === 0) await a.waitForTimeout(100)
   await a.waitForTimeout(1500)
