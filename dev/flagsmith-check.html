@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>Readout · Flagsmith connection check (dev only)</title>
+    <script type="module" src="./flagsmith-check.ts"></script>
+  </head>
+  <body>
+    <div id="root">
+      <main id="main">
+        <p data-cls="eyebrow">Development only · not part of the study · not built for production</p>
+        <h1 data-cls="title">Flagsmith connection check</h1>
+        <p data-cls="intro">
+          Uses the app’s real <code>client.ts</code>, <code>measurement.ts</code> and delivery monitor against the
+          Development environment. Every value below is read from the SDK or observed on the wire.
+        </p>
+        <div data-cls="row">
+          <button id="run">1 · Identify and evaluate</button>
+          <button id="send" disabled>2 · Send one dev check event</button>
+        </div>
+        <pre id="out" data-state="idle"></pre>
+      </main>
+    </div>
+  </body>
+</html>
