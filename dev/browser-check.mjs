@@ -676,7 +676,14 @@ async function deployChecks() {
 // ---------- run ----------
 const COPY = await expectedCopy()
 const server = await startServer()
-const browser = await chromium.launch({ executablePath: CHROME, headless: true })
+// The two-tab checks drive a background tab. Chrome pauses animation frames and throttles timers there, and Playwright
+// needs a frame to see a button settle before it clicks, so a background click can wait forever (seen on Linux CI).
+// These switches keep every tab running like a foreground window; they change nothing the app does.
+const browser = await chromium.launch({
+  executablePath: CHROME,
+  headless: true,
+  args: ['--disable-background-timer-throttling', '--disable-backgrounding-occluded-windows', '--disable-renderer-backgrounding'],
+})
 try {
   const finished = await measuredJourney(browser)
   await twoTabs(browser)
