@@ -1,0 +1,329 @@
+{
+  "tool": "flagsmith-attach-dev-metrics",
+  "mode": "dry-run",
+  "environment": "<id>",
+  "started": "2026-11-17T06:44:53.012Z",
+  "steps": [
+    {
+      "at": "2026-11-17T06:44:53.953Z",
+      "request": "GET /environments/<env-key>/",
+      "body": null,
+      "status": 200,
+      "response": {
+        "id": "<id>",
+        "uuid": "3c2d814a-0023-47fc-9172-04d81e5e30a9",
+        "name": "Development",
+        "api_key": "<env-key>",
+        "description": null,
+        "project": "<id>",
+        "minimum_change_request_approvals": null,
+        "allow_client_traits": true,
+        "banner_text": null,
+        "banner_colour": null,
+        "hide_disabled_flags": null,
+        "use_mv_v2_evaluation": true,
+        "use_identity_composite_key_for_hashing": true,
+        "hide_sensitive_data": false,
+        "use_v2_feature_versioning": true,
+        "use_identity_overrides_in_local_eval": true,
+        "is_creating": false,
+        "metadata": [],
+        "total_segment_overrides": 1
+      }
+    },
+    {
+      "at": "2026-11-17T06:44:57.036Z",
+      "request": "GET /environments/<env-key>/experiment-metrics/",
+      "body": null,
+      "status": 200,
+      "response": {
+        "count": 5,
+        "next": null,
+        "previous": null,
+        "results": [
+          {
+            "id": "M1",
+            "name": "Readout score (unfinished = 0)",
+            "description": "M1 primary. Correct calls / 6 per exposed player; unfinished runs count as 0.",
+            "aggregation": "mean",
+            "direction": "up",
+            "definition": {
+              "event": "readout_score",
+              "version": 1
+            },
+            "experiments": [
+              {
+                "id": "E",
+                "name": "Readout framing v1",
+                "status": "running"
+              }
+            ],
+            "created_at": "2026-11-16T18:18:36.182432Z",
+            "updated_at": "2026-11-16T18:18:36.182441Z"
+          },
+          {
+            "id": "M2",
+            "name": "Finished measured run",
+            "description": "M2 guardrail. Share of exposed players who finished all six results.",
+            "aggregation": "occurrence",
+            "direction": "up",
+            "definition": {
+              "event": "readout_completed",
+              "version": 1
+            },
+            "experiments": [],
+            "created_at": "2026-11-16T18:20:43.009026Z",
+            "updated_at": "2026-11-16T18:20:43.009034Z"
+          },
+          {
+            "id": "M3",
+            "name": "Correct call on significant loss",
+            "description": "M3 secondary. 1 if the player chose Keep control on the significant-loss result, else 0.",
+            "aggregation": "mean",
+            "direction": "up",
+            "definition": {
+              "event": "readout_loss_call",
+              "version": 1
+            },
+            "experiments": [],
+            "created_at": "2026-11-16T18:21:22.570182Z",
+            "updated_at": "2026-11-16T18:21:22.570196Z"
+          },
+          {
+            "id": "M4",
+            "name": "Correct call on promising-but-inconclusive result",
+            "description": "M4 guardrail. 1 if the player chose Keep collecting on the promising-but-inconclusive result, else 0.",
+            "aggregation": "mean",
+            "direction": "up",
+            "definition": {
+              "event": "readout_near_miss_call",
+              "version": 1
+            },
+            "experiments": [],
+            "created_at": "2026-11-16T18:21:43.671560Z",
+            "updated_at": "2026-11-16T18:21:43.671572Z"
+          },
+          {
+            "id": "M5",
+            "name": "Copied the Readout Rules",
+            "description": "M5 exploratory. Share of exposed players who copied the six Readout Rules from the summary.",
+            "aggregation": "occurrence",
+            "direction": "up",
+            "definition": {
+              "event": "readout_rules_copied",
+              "version": 1
+            },
+            "experiments": [],
+            "created_at": "2026-11-16T18:22:02.938621Z",
+            "updated_at": "2026-11-16T18:22:02.938633Z"
+          }
+        ]
+      }
+    },
+    {
+      "at": "2026-11-17T06:44:58.767Z",
+      "request": "GET /environments/<env-key>/experiments/",
+      "body": null,
+      "status": 200,
+      "response": {
+        "count": 1,
+        "next": null,
+        "previous": null,
+        "results": [
+          {
+            "id": "E",
+            "feature": "<masked>",
+            "name": "Readout framing v1",
+            "hypothesis": "Showing chance to beat control instead of a p-value increases the Readout score per exposed player without reducing completion.",
+            "status": "running",
+            "metrics": [
+              {
+                "id": "<id>",
+                "metric": "M1",
+                "metric_name": "Readout score (unfinished = 0)",
+                "aggregation": "mean",
+                "direction": "up",
+                "expected_direction": "increase",
+                "created_at": "2026-11-16T18:23:27.730891Z"
+              }
+            ],
+            "created_at": "2026-11-16T18:23:27.726639Z",
+            "updated_at": "2026-11-16T18:23:29.576391Z",
+            "started_at": "2026-11-16T18:23:29.571889Z",
+            "ended_at": null
+          }
+        ],
+        "status_counts": {
+          "created": 0,
+          "running": 1,
+          "paused": 0,
+          "completed": 0
+        }
+      }
+    },
+    {
+      "at": "2026-11-17T06:45:00.063Z",
+      "request": "GET /environments/<env-key>/experiments/<id>/metrics/",
+      "body": null,
+      "status": 200,
+      "response": [
+        {
+          "id": "<id>",
+          "metric": "M1",
+          "metric_name": "Readout score (unfinished = 0)",
+          "aggregation": "mean",
+          "direction": "up",
+          "expected_direction": "increase",
+          "created_at": "2026-11-16T18:23:27.730891Z"
+        }
+      ]
+    },
+    {
+      "at": "2026-11-17T06:45:01.145Z",
+      "request": "GET /environments/<env-key>/experiments/<id>/",
+      "body": null,
+      "status": 200,
+      "response": {
+        "id": "E",
+        "feature": "<masked>",
+        "name": "Readout framing v1",
+        "hypothesis": "Showing chance to beat control instead of a p-value increases the Readout score per exposed player without reducing completion.",
+        "status": "running",
+        "metrics": [
+          {
+            "id": "<id>",
+            "metric": "M1",
+            "metric_name": "Readout score (unfinished = 0)",
+            "aggregation": "mean",
+            "direction": "up",
+            "expected_direction": "increase",
+            "created_at": "2026-11-16T18:23:27.730891Z"
+          }
+        ],
+        "experiment_rollout": {
+          "enabled": true,
+          "rollout_percentage": 100,
+          "feature_state_value": {
+            "type": "string",
+            "value": "p_value"
+          },
+          "multivariate_feature_state_values": [
+            {
+              "multivariate_feature_option": "<id>",
+              "percentage_allocation": 50
+            }
+          ],
+          "audience": {
+            "match": "any",
+            "segments": []
+          }
+        },
+        "created_at": "2026-11-16T18:23:27.726639Z",
+        "updated_at": "2026-11-16T18:23:29.576391Z",
+        "started_at": "2026-11-16T18:23:29.571889Z",
+        "ended_at": null
+      }
+    },
+    {
+      "at": "2026-11-17T06:45:01.755Z",
+      "request": "GET /environments/<env-key>/experiments/<id>/results/",
+      "body": null,
+      "status": 200,
+      "response": {
+        "results": {
+          "as_of": "2026-11-16T18:58:03.551241Z",
+          "last_error_at": null,
+          "refresh_requested_at": "2026-11-16T18:58:03.435141Z",
+          "payload": {
+            "metrics": [
+              {
+                "variants": {
+                  "control": {
+                    "n": 140,
+                    "sum": 68.33333333333333,
+                    "sum_squares": 54.72222222222222
+                  },
+                  "chance_to_win": {
+                    "n": 150,
+                    "sum": 98.99999999999993,
+                    "sum_squares": 89.55555555555546
+                  }
+                },
+                "inference": {
+                  "chance_to_win": {
+                    "lift": 0.3521951219512185,
+                    "ci_low": 0.12893446844406178,
+                    "ci_high": 0.5754557754583752,
+                    "chance_to_win": 0.999005452879473
+                  }
+                },
+                "metric_id": "M1",
+                "conversions_timeseries": null
+              }
+            ],
+            "srm_p_value": null,
+            "exposures_timeseries": {
+              "points": [
+                {
+                  "bucket": "2026-11-16T18:00:00+00:00",
+                  "new_identities": {
+                    "control": 140,
+                    "chance_to_win": 150
+                  }
+                }
+              ],
+              "granularity": "hour"
+            }
+          },
+          "is_final": false
+        }
+      }
+    }
+  ],
+  "plan": {
+    "pendingAttachments": [
+      {
+        "request": "POST /environments/<env-key>/experiments/<id>/metrics/",
+        "body": {
+          "metric": "M2",
+          "expected_direction": "not_decrease"
+        },
+        "metric": "<id>"
+      },
+      {
+        "request": "POST /environments/<env-key>/experiments/<id>/metrics/",
+        "body": {
+          "metric": "M3",
+          "expected_direction": "increase"
+        },
+        "metric": "<id>"
+      },
+      {
+        "request": "POST /environments/<env-key>/experiments/<id>/metrics/",
+        "body": {
+          "metric": "M4",
+          "expected_direction": "not_decrease"
+        },
+        "metric": "<id>"
+      },
+      {
+        "request": "POST /environments/<env-key>/experiments/<id>/metrics/",
+        "body": {
+          "metric": "M5",
+          "expected_direction": "increase"
+        },
+        "metric": "<id>"
+      }
+    ],
+    "refresh": {
+      "request": "POST /environments/<env-key>/experiments/<id>/results/refresh/",
+      "note": "allowed now"
+    },
+    "unchanged": [
+      "M1 (stays primary, increase)",
+      "experiment status (stays running)",
+      "metric definitions",
+      "Production"
+    ]
+  }
+}
