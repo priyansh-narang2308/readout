@@ -1,0 +1,20 @@
+{
+  "feature": "<FEATURE_ID>",
+  "name": "Readout framing v1",
+  "hypothesis": "Showing chance to beat control instead of a p-value increases the Readout score per exposed player without reducing completion.",
+  "metrics": [
+    { "metric": "<M1_ID>", "expected_direction": "increase" },
+    { "metric": "<M2_ID>", "expected_direction": "not_decrease" },
+    { "metric": "<M3_ID>", "expected_direction": "increase" },
+    { "metric": "<M4_ID>", "expected_direction": "not_decrease" },
+    { "metric": "<M5_ID>", "expected_direction": "increase" }
+  ],
+  "experiment_rollout": {
+    "enabled": true,
+    "rollout_percentage": 100,
+    "feature_state_value": { "type": "string", "value": "p_value" },
+    "multivariate_feature_state_values": [
+      { "multivariate_feature_option": "<CHANCE_TO_WIN_OPTION_ID>", "percentage_allocation": 50 }
+    ]
+  }
+}
