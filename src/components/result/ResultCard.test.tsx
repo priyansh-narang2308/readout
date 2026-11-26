@@ -73,4 +73,16 @@ describe('result card structure (26 §8.2 item 12)', () => {
     const { container } = render(<ResultCard model={SCENARIOS.S1} framing={null} />)
     expect(container.querySelector('[data-inference]')).toBeNull()
   })
+
+  it('evidence callouts use valid whitespace-free aria-describedby IDs', () => {
+    const { container } = render(<ResultCard model={SCENARIOS.S2} framing="p_value" annotations={SCENARIOS.S2.evidence} />)
+    const described = [...container.querySelectorAll('[aria-describedby]')]
+    expect(described.length).toBeGreaterThan(0)
+    for (const el of described) {
+      const ids = el.getAttribute('aria-describedby')!.split(/\s+/)
+      expect(ids).toHaveLength(1)
+      expect(ids[0]).not.toMatch(/\s/)
+      expect(document.getElementById(ids[0]!)).not.toBeNull()
+    }
+  })
 })

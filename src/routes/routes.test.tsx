@@ -10,6 +10,7 @@ import type { GateResult } from '../flagsmith/client'
 import { KEYS, loadAttempt, lockCall, newAttempt, readPractice, withStatus, writeAttempt } from '../run/attemptStore'
 import { buildPayload, type StudyDeps } from '../run/controller'
 import { StudyProvider } from '../run/StudyContext'
+import { FlipRoute, SummaryRoute } from './Readout'
 import { Landing } from './Landing'
 import { ChallengeRoute, PracticeRoute } from './Run'
 
@@ -49,6 +50,8 @@ function app(d: StudyDeps, at = '/') {
           <Route path="/" element={<Landing />} />
           <Route path="/challenge" element={<ChallengeRoute />} />
           <Route path="/practice" element={<PracticeRoute />} />
+          <Route path="/practice/readout" element={<FlipRoute kind="practice" />} />
+          <Route path="/practice/readout/summary" element={<SummaryRoute kind="practice" />} />
           <Route path="*" element={<p>elsewhere</p>} />
         </Routes>
         <Path />
@@ -243,5 +246,34 @@ describe('Practice', () => {
     expect(d.sendScores).not.toHaveBeenCalled()
     expect(localStorage.getItem(KEYS.attempt)).toBeNull()
     expect(readPractice()?.answers).toBeTruthy()
+  })
+
+  it('blocked storage: finishing practice still reaches the practice flip without wiping answers', async () => {
+    const spy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new Error('blocked')
+    })
+    try {
+      const d = deps({ storageOk: () => false })
+      app(d, '/practice')
+      for (let i = 0; i < 6; i++) await play('1')
+      await waitFor(() => expect(path()).toBe('/practice/readout'))
+      expect(screen.getByRole('heading', { level: 1, name: 'This was a practice run.' })).toBeTruthy()
+      expect(d.enrol).not.toHaveBeenCalled()
+      expect(d.sendScores).not.toHaveBeenCalled()
+    } finally {
+      spy.mockRestore()
+    }
+  })
+
+  it('leaving practice during the final card exit animation cancels the pending navigation', async () => {
+    app(deps(), '/practice')
+    for (let i = 0; i < 5; i++) await play('1')
+    fireEvent.keyDown(window, { key: '1' })
+    fireEvent.keyDown(window, { key: 'Enter' })
+    fireEvent.click(screen.getByRole('button', { name: 'Leave' }))
+    fireEvent.click(screen.getAllByRole('button', { name: 'Leave' })[1]!)
+    expect(path()).toBe('/')
+    await act(() => new Promise((r) => setTimeout(r, 250)))
+    expect(path()).toBe('/')
   })
 })

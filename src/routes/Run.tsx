@@ -15,7 +15,7 @@ import { MEASURED_ORDER, SCENARIOS, type Call, type Framing, type ScenarioId } f
 import { shuffled } from '../content/scoring'
 import { PRACTICE_COPY } from '../content/study'
 import { MeasuredSession } from '../flagsmith/MeasuredSession'
-import { variantToFraming, writePractice } from '../run/attemptStore'
+import { variantToFraming } from '../run/attemptStore'
 import { useStudy } from '../run/StudyContext'
 
 /** Exit of the locked card (26 §7: 16 px up, fade, 180 ms) before the next one enters. */
@@ -209,15 +209,25 @@ function LockingPanel({ run, onDone }: { run: () => Promise<unknown>; onDone: ()
   useEffect(() => {
     if (started.current) return
     started.current = true
+    let cancelled = false
     let n = 0
+    let doneTimer: ReturnType<typeof setTimeout> | undefined
     const iv = setInterval(() => {
       n = Math.min(n + 1, 6)
       setTicks(n)
       if (n >= 6) clearInterval(iv)
     }, TICK_MS)
-    const ticksShown = new Promise((r) => setTimeout(r, TICK_MS * 6 + 120))
-    void Promise.all([run().catch(() => undefined), ticksShown]).then(onDone)
-    return () => clearInterval(iv)
+    const ticksShown = new Promise<void>((r) => {
+      doneTimer = setTimeout(r, TICK_MS * 6 + 120)
+    })
+    void Promise.all([run().catch(() => undefined), ticksShown]).then(() => {
+      if (!cancelled) onDone()
+    })
+    return () => {
+      cancelled = true
+      clearInterval(iv)
+      if (doneTimer !== undefined) clearTimeout(doneTimer)
+    }
   }, [run, onDone])
   return (
     <div className={cx(page, 'grid min-h-[60vh] place-content-center justify-items-center gap-6 text-center')} role="status">
@@ -247,6 +257,14 @@ export function ChallengeRoute() {
   const [leaving, setLeaving] = useState<ScenarioId | null>(null)
   const [locking, setLocking] = useState(false)
   const [movedOn, setMovedOn] = useState(false)
+  const exitTimer = useRef<number | null>(null)
+
+  useEffect(
+    () => () => {
+      if (exitTimer.current !== null) clearTimeout(exitTimer.current)
+    },
+    [],
+  )
 
   useEffect(() => {
     if (live && !leaving && live.index !== shown) setShown(live.index)
@@ -283,7 +301,9 @@ export function ChallengeRoute() {
     }
     setMovedOn(false)
     setLeaving(id)
-    window.setTimeout(() => {
+    if (exitTimer.current !== null) clearTimeout(exitTimer.current)
+    exitTimer.current = window.setTimeout(() => {
+      exitTimer.current = null
       setLeaving(null)
       if (out.attempt.index >= 6) setLocking(true)
       else setShown(out.attempt.index)
@@ -322,25 +342,35 @@ export function ChallengeRoute() {
 
 export function PracticeRoute() {
   usePageTitle('Practice')
-  const { practiceReason, defaultFraming } = useStudy()
+  const { practiceReason, defaultFraming, savePractice } = useStudy()
   const navigate = useNavigate()
   const [order] = useState<ScenarioId[]>(() => shuffled(MEASURED_ORDER))
   const [answers, setAnswers] = useState<Partial<Record<ScenarioId, Call>>>({})
   const [index, setIndex] = useState(0)
   const [leaving, setLeaving] = useState<ScenarioId | null>(null)
   const [framing, setFraming] = useState<Framing>(defaultFraming.framing)
+  const exitTimer = useRef<number | null>(null)
   const id = order[index]!
+
+  useEffect(
+    () => () => {
+      if (exitTimer.current !== null) clearTimeout(exitTimer.current)
+    },
+    [],
+  )
 
   const onLock: LockFn = (call) => {
     const next = { ...answers, [id]: call }
     setAnswers(next)
     setLeaving(id)
-    window.setTimeout(() => {
+    if (exitTimer.current !== null) clearTimeout(exitTimer.current)
+    exitTimer.current = window.setTimeout(() => {
+      exitTimer.current = null
       setLeaving(null)
       if (index + 1 < 6) setIndex(index + 1)
       else {
         // Practice keeps only its last run, with no identity, and never in readout.attempt.
-        writePractice({ order, answers: next, finishedAt: new Date().toISOString(), framing })
+        savePractice({ order, answers: next, finishedAt: new Date().toISOString(), framing })
         navigate('/practice/readout', { replace: true })
       }
     }, EXIT_MS)

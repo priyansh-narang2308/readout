@@ -8,7 +8,7 @@ import type { Call, Framing, ScenarioId } from '../content/scenarios.v1'
 import type { PracticeReason } from '../content/study'
 import { enrol, envName, initFlagsmith, isInitialised, type GateResult } from '../flagsmith/client'
 import { flushOnHide, resendIfNeeded, rulesCopiedNeedsResend, sendScores } from '../flagsmith/measurement'
-import { captureRef, storageAvailable, subscribeAttempt, type AttemptState } from './attemptStore'
+import { captureRef, storageAvailable, subscribeAttempt, writePractice, type AttemptState, type PracticeRecord } from './attemptStore'
 import {
   currentState,
   finishChallenge,
@@ -32,6 +32,9 @@ export type Study = {
    * otherwise the built-in default, `p_value`. Never an experiment arm, and never fetched just for this.
    */
   defaultFraming: { framing: Framing; source: 'flagsmith' | 'default' }
+  /** Last finished practice run in this session (in-memory fallback when localStorage is blocked). */
+  practiceRun: PracticeRecord | null
+  savePractice: (p: PracticeRecord) => void
   /** Why the current practice run is practice; null = the player chose it. */
   practiceReason: PracticeReason | null
   setPracticeReason: (r: PracticeReason | null) => void
@@ -70,6 +73,7 @@ export function StudyProvider({ children, deps: given }: { children: ReactNode; 
   const [deps] = useState<StudyDeps>(() => given ?? realDeps(storageAvailable()))
   const [state, setState] = useState<AttemptState>(() => currentState(deps))
   const [gate, setGate] = useState<GateResult | null>(null)
+  const [practiceRun, setPracticeRun] = useState<PracticeRecord | null>(null)
   const [practiceReason, setPracticeReason] = useState<PracticeReason | null>(null)
   const [preparing, setPreparing] = useState(false)
   const loaded = useRef(false)
@@ -147,6 +151,11 @@ export function StudyProvider({ children, deps: given }: { children: ReactNode; 
     [refresh],
   )
 
+  const savePractice = useCallback((p: PracticeRecord) => {
+    setPracticeRun(p)
+    writePractice(p)
+  }, [])
+
   const defaultFraming = useMemo<Study['defaultFraming']>(
     () =>
       gate && !gate.enrolled && gate.rollout ? { framing: gate.rollout, source: 'flagsmith' } : { framing: 'p_value', source: 'default' },
@@ -158,6 +167,8 @@ export function StudyProvider({ children, deps: given }: { children: ReactNode; 
       state,
       gate,
       defaultFraming,
+      practiceRun,
+      savePractice,
       practiceReason,
       setPracticeReason,
       preparing,
@@ -167,7 +178,7 @@ export function StudyProvider({ children, deps: given }: { children: ReactNode; 
       markVariantMismatch: onMismatch,
       refresh,
     }),
-    [state, gate, defaultFraming, practiceReason, preparing, start, lock, finish, onMismatch, refresh],
+    [state, gate, defaultFraming, practiceRun, savePractice, practiceReason, preparing, start, lock, finish, onMismatch, refresh],
   )
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>
 }

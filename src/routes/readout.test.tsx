@@ -161,6 +161,8 @@ describe('debrief', () => {
     expect(new Set(lines())).toEqual(new Set(['chance_to_win']))
     fireEvent.keyDown(window, { key: 'ArrowRight' })
     expect(new Set(lines())).toEqual(new Set(['p_value']))
+    // No spurious flash outline from switching n after toggling on the prior result.
+    expect(document.querySelector('[class*="shadow-[0_0_0_1px_var(--color-accent)]"]')).toBeNull()
   })
 
   it('redirects: nothing finished → landing; a bad number → result 1; practice without a record → practice', () => {

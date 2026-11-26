@@ -301,6 +301,7 @@ function MetricBlock({
   const armsEvidence = kind === 'Primary metric' ? annotations.find((x) => x.target === 'arms') : undefined
   const diff = m.variantRate - m.controlRate
   const full = density === 'full'
+  const kindSlug = kind === 'Guardrail' ? 'guardrail' : 'primary'
   return (
     <div
       className={cx('border-t border-line-1', full ? 'mt-5 pt-5' : 'mt-3 pt-3')}
@@ -326,7 +327,7 @@ function MetricBlock({
           full ? 'mt-3 grid-cols-[auto_1fr] max-sm:grid-cols-1' : 'mt-2 grid-cols-1',
           liftEvidence ? evidence('outline-offset-6') : 'rounded-control',
         )}
-        aria-describedby={liftEvidence ? `${idBase}-lift-${kind}` : undefined}
+        aria-describedby={liftEvidence ? `${idBase}-lift-${kindSlug}` : undefined}
       >
         <p
           className={cx(
@@ -350,7 +351,7 @@ function MetricBlock({
           <IntervalBar metric={m} evidence={!!liftEvidence || !!intervalEvidence} density={density} />
         </div>
       </div>
-      {liftEvidence && <Callout id={`${idBase}-lift-${kind}`} text={liftEvidence.callout} />}
+      {liftEvidence && <Callout id={`${idBase}-lift-${kindSlug}`} text={liftEvidence.callout} />}
       {intervalEvidence && !liftEvidence && <Callout id={`${idBase}-interval`} text={intervalEvidence.callout} />}
       {framing && (
         <InferenceLine framing={framing} metric={m} animate={animate} delayMs={animateDelay} density={density} />

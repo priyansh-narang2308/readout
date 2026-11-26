@@ -131,4 +131,14 @@ describe('enrol (Start)', () => {
     await initFlagsmith('uid-2')
     expect(net.requests.filter((r) => r.includes('identifier=uid-2')).length).toBe(1)
   })
+
+  it('retries initFlagsmith for the same identity if a previous init failed', async () => {
+    net.identityStatus = 500
+    await initFlagsmith('uid-retry')
+    expect(isReady('uid-retry')).toBe(false)
+    net.identityStatus = 200
+    await initFlagsmith('uid-retry')
+    expect(isReady('uid-retry')).toBe(true)
+    expect(net.requests.filter((r) => r.includes('identifier=uid-retry')).length).toBe(2)
+  })
 })

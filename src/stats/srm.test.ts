@@ -51,6 +51,8 @@ describe('SRM check (EXPERIMENT.md §10 rule 1)', () => {
     expect(warn.status).toBe(1)
     expect(warn.stdout).toMatch(/SRM WARNING.*Rule 1: no result is interpreted/)
     expect(run('--control', 'x').status).toBe(2)
+    expect(run('--control', '', '--chance-to-win', '100').status).toBe(2)
+    expect(run('--control', '100', '--chance-to-win', '   ').status).toBe(2)
     expect(run('--control', '10', '--chance-to-win', '20').status).toBe(3)
   })
 })

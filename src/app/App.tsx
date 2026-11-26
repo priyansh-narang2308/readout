@@ -60,7 +60,12 @@ export function ScrollManager() {
     first.current = false
     if (nav === 'POP' && !(initial && hash)) return
     if (hash) {
-      const id = decodeURIComponent(hash.slice(1))
+      let id = hash.slice(1)
+      try {
+        id = decodeURIComponent(id)
+      } catch {
+        // Malformed percent-encoding in the URL hash: ignore rather than crashing the route.
+      }
       document.getElementById(id)?.scrollIntoView({ block: 'start' })
       return
     }

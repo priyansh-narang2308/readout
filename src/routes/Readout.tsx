@@ -28,17 +28,17 @@ export type ReadoutRun = {
 }
 
 export function useReadoutRun(kind: 'measured' | 'practice'): ReadoutRun | null {
-  const { state } = useStudy()
+  const { state, practiceRun } = useStudy()
   return useMemo(() => {
     if (kind === 'measured') {
       if (state.kind !== 'finished') return null
       const a = state.attempt
       return { kind, order: a.order, answers: a.answers, seen: variantToFraming(a.variant), base: '/readout', variant: a.variant }
     }
-    const p = readPractice()
+    const p = readPractice() ?? practiceRun
     if (!p) return null
     return { kind, order: p.order, answers: p.answers, seen: p.framing, base: '/practice/readout' }
-  }, [kind, state])
+  }, [kind, state, practiceRun])
 }
 
 const other = (f: Framing): Framing => (f === 'p_value' ? 'chance_to_win' : 'p_value')
@@ -412,14 +412,16 @@ export function DebriefRoute({ kind }: { kind: 'measured' | 'practice' }) {
   const n = Number(params.n)
   const valid = Number.isInteger(n) && n >= 1 && n <= 6
   const id = run && valid ? run.order[n - 1] : undefined
-  const [framing, setFraming] = useState<Framing | null>(run?.seen ?? null)
+  const [framingState, setFramingState] = useState<{ n: number; framing: Framing } | null>(null)
   const titleRef = useRef<HTMLHeadingElement>(null)
   usePageTitle(id ? `Result ${n} · ${SCENARIOS[id].shortTitle}` : 'Debrief')
+
+  const framing = run ? (framingState?.n === n ? framingState.framing : run.seen) : null
+  const setFraming = useCallback((f: Framing) => setFramingState({ n, framing: f }), [n])
 
   // Each page opens on the framing this player saw, at the top, with focus on its title.
   useEffect(() => {
     if (!run) return
-    setFraming(run.seen)
     window.scrollTo({ top: 0 })
     titleRef.current?.focus({ preventScroll: true })
   }, [n, run?.seen]) // eslint-disable-line react-hooks/exhaustive-deps

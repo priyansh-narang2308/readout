@@ -89,9 +89,9 @@ let initIdentity: string | null = null
 let initError: Error | null = null
 let initDone = false
 
-/** Initialise once per page load with this identity. */
+/** Initialise once per page load with this identity; retries only if a prior init finished with an error. */
 export function initFlagsmith(identity: string, fetchImpl?: ReturnType<typeof createMonitoredFetch>): Promise<void> {
-  if (initPromise && initIdentity === identity) return initPromise
+  if (initPromise && initIdentity === identity && (!initDone || !initError)) return initPromise
   initIdentity = identity
   initError = null
   initDone = false

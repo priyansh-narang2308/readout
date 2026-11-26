@@ -63,8 +63,8 @@ const EX_C = inferenceText('chance_to_win', EX_METRIC)
 
 /** Has this browser finished a run, so the reveal is no longer a spoiler? */
 function usePlayed(): boolean {
-  const { state } = useStudy()
-  return useMemo(() => state.kind === 'finished' || readPractice() !== null, [state])
+  const { state, practiceRun } = useStudy()
+  return useMemo(() => state.kind === 'finished' || practiceRun !== null || readPractice() !== null, [state, practiceRun])
 }
 
 export function AboutRoute() {

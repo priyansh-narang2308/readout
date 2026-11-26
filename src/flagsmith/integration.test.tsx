@@ -228,6 +228,21 @@ describe('real SDK on a fake network', () => {
     await until(() => events().some((e) => e.event === 'readout_rules_copied'))
   })
 
+  it('M5: retries SDK init in the same session when a second copy happens after a transient Edge failure', async () => {
+    const { deps, a } = await playMeasured()
+    await finishChallenge(deps, a.id)
+    await until(() => stored().status === 'sent_1')
+    // Later visit straight to /rules: first copy hits Edge 500, second copy in the same page load recovers.
+    __resetClient()
+    net.identityStatus = 500
+    await onLoad(realDeps(true)).work
+    expect(await trackRulesCopied()).toBe(false)
+    expect(localStorage.getItem(KEYS.rulesCopied)).toBeNull()
+    net.identityStatus = 200
+    expect(await trackRulesCopied()).toBe(true)
+    await until(() => events().some((e) => e.event === 'readout_rules_copied'))
+  })
+
   it('M5: never for a scored attempt whose scores were not sent yet (not measured), even with the SDK ready', async () => {
     const { a } = await playMeasured()
     const s = stored()

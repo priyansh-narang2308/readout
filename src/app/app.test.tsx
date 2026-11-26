@@ -216,6 +216,11 @@ describe('scroll on navigation', () => {
     expect(screen.getByTestId('path').textContent).toBe('/team')
     expect(top).not.toHaveBeenCalled()
   })
+
+  it('a malformed percent-encoded #hash does not crash the app', () => {
+    app('/rules#%E0%A4%A')
+    expect(h1().textContent).toBe('The Readout Rules')
+  })
 })
 
 const ROOT = join(__dirname, '..', '..')

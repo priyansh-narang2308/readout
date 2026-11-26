@@ -15,6 +15,9 @@
  *
  * Exit codes: 0 no warning · 1 SRM WARNING (rule 1: no result is interpreted) · 2 bad input · 3 not assessed (< 100)
  */
+import { resolve } from 'node:path'
+import { pathToFileURL } from 'node:url'
+
 export const MIN_TOTAL = 100
 export const ALPHA = 0.001
 
@@ -42,12 +45,14 @@ export function srmCheck(control, chanceToWin) {
   return { total, statistic, p, verdict: p < ALPHA ? 'warning' : 'ok' }
 }
 
-const isMain = import.meta.url === `file://${process.argv[1]}`
+const isMain = process.argv[1] ? import.meta.url === pathToFileURL(resolve(process.argv[1])).href : false
 if (isMain) {
   const args = process.argv.slice(2)
   const opt = (name) => {
     const i = args.indexOf(name)
-    return i >= 0 ? Number(args[i + 1]) : NaN
+    if (i < 0 || i + 1 >= args.length) return NaN
+    const raw = args[i + 1]
+    return /^\d+$/.test(raw) ? Number(raw) : NaN
   }
   let r
   try {
