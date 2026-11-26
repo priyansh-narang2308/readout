@@ -1,0 +1,258 @@
+/*
+ * The only stylesheet (user rule: Tailwind everywhere). It holds what Tailwind itself needs:
+ * the import, self-hosted fonts, the design tokens as the Tailwind theme (26 §1–§7), and a minimal base layer.
+ * Every component is styled with utility classes; shared class strings live in src/components/ui/classes.ts.
+ */
+@import 'tailwindcss';
+
+/* Self-hosted fonts (26 §2): latin subset only, font-display: swap, no third-party font requests (25 §10). */
+@import '@fontsource/newsreader/latin-500.css';
+@import '@fontsource/ibm-plex-sans/latin-400.css';
+@import '@fontsource/ibm-plex-sans/latin-500.css';
+@import '@fontsource/ibm-plex-sans/latin-600.css';
+@import '@fontsource/ibm-plex-mono/latin-400.css';
+@import '@fontsource/ibm-plex-mono/latin-500.css';
+
+/* Scan only our own sources (and the dev harness pages). */
+@source '../../dev';
+
+@theme {
+  /* Tailwind's stock palette and fonts are switched off: only these tokens exist. Dark only for v1. */
+  --color-*: initial;
+  --font-*: initial;
+
+  --color-bg-0: #0a0b0d;
+  --color-bg-1: #111317;
+  --color-bg-2: #171a1f;
+  --color-bg-3: #1e2228;
+  --color-line-1: #22262d;
+  --color-line-2: #30353d;
+  --color-line-3: #4a515b;
+  --color-ink-1: #eceef1;
+  --color-ink-2: #aab1bb;
+  --color-ink-3: #7d8590;
+  --color-accent: #f2b24c;
+  --color-accent-hover: #f5c06b;
+  --color-accent-press: #e3a43f;
+  --color-accent-ink: #1b1406;
+  --color-accent-wash: rgb(242 178 76 / 0.12);
+  --color-good: #5dbb8a;
+  --color-bad: #ee7a67;
+  --color-viz-bar: #aab1bb;
+  --color-viz-point: #eceef1;
+  --color-viz-zero: #eceef1;
+
+  --font-display: 'Newsreader', ui-serif, Georgia, serif;
+  --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Type scale (26 §2). "-m" is the phone size (< 640 px). */
+  --text-display-xl: 60px;
+  --text-display-xl--line-height: 64px;
+  --text-display-xl--letter-spacing: -0.02em;
+  --text-display-xl-m: 40px;
+  --text-display-xl-m--line-height: 44px;
+  --text-display-xl-m--letter-spacing: -0.02em;
+  --text-display-l: 44px;
+  --text-display-l--line-height: 48px;
+  --text-display-l--letter-spacing: -0.015em;
+  --text-display-l-m: 32px;
+  --text-display-l-m--line-height: 36px;
+  --text-display-l-m--letter-spacing: -0.015em;
+  --text-title-l: 26px;
+  --text-title-l--line-height: 32px;
+  --text-title-l--letter-spacing: -0.01em;
+  --text-title-l-m: 22px;
+  --text-title-l-m--line-height: 28px;
+  --text-title-l-m--letter-spacing: -0.01em;
+  --text-title-m: 18px;
+  --text-title-m--line-height: 26px;
+  --text-title-m-m: 17px;
+  --text-title-m-m--line-height: 24px;
+  --text-body-l: 18px;
+  --text-body-l--line-height: 28px;
+  --text-body-l-m: 17px;
+  --text-body-l-m--line-height: 26px;
+  --text-body: 15px;
+  --text-body--line-height: 24px;
+  --text-body-s: 13px;
+  --text-body-s--line-height: 20px;
+  --text-eyebrow: 12px;
+  --text-eyebrow--line-height: 16px;
+  --text-eyebrow--letter-spacing: 0.08em;
+  --text-data: 14px;
+  --text-data--line-height: 20px;
+  --text-data-m: 13px;
+  --text-data-m--line-height: 20px;
+  --text-data-xl: 44px;
+  --text-data-xl--line-height: 48px;
+  --text-data-xl--letter-spacing: -0.01em;
+  --text-data-xl-m: 34px;
+  --text-data-xl-m--line-height: 40px;
+  --text-data-xl-m--letter-spacing: -0.01em;
+
+  --radius-card: 8px;
+  --radius-control: 6px;
+  --radius-chip: 4px;
+
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  --container-page: 1120px;
+  --container-card: 720px;
+  --container-read: 640px;
+
+  --animate-spin-fast: spin 0.8s linear infinite;
+  --animate-evidence-in: evidence-in 240ms cubic-bezier(0.2, 0.8, 0.2, 1) 180ms both;
+  /* Debrief navigation: the content cross-fades (--t-base); the evidence outline follows once it is in (26 §7). */
+  --animate-fade-in: evidence-in 180ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  /* 26 §7: the next result card enters from 16 px below (220 ms); the Leave confirmation slides down 8 px. */
+  --animate-card-in: card-in 220ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  --animate-drop-in: drop-in 180ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  /* The locked card leaves 16 px up (180 ms) before the next enters. */
+  --animate-card-out: card-out 180ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+
+  @keyframes card-out {
+    from {
+      opacity: 1;
+      transform: none;
+    }
+    to {
+      opacity: 0;
+      transform: translateY(-16px);
+    }
+  }
+
+  @keyframes card-in {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes drop-in {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes evidence-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+  body {
+    min-height: 100vh;
+    background: var(--color-bg-0);
+    color: var(--color-ink-1);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 24px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  #root {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  main {
+    flex: 1;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+  ::selection {
+    background: color-mix(in srgb, var(--color-accent) 35%, transparent);
+    color: var(--color-ink-1);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 1ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 1ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/*
+ * Print (25 §9, 26 §8.7 and §8.9): the team guide and the Rules print as ink on paper. The same tokens get paper
+ * values, so every utility follows without print-only classes; page chrome is hidden with Tailwind's print: variant.
+ * Unlayered on purpose, so it overrides the theme layer.
+ */
+@media print {
+  :root {
+    color-scheme: light;
+    --color-bg-0: #ffffff;
+    --color-bg-1: #ffffff;
+    --color-bg-2: #f2f2f2;
+    --color-bg-3: #e6e6e6;
+    --color-line-1: #d0d0d0;
+    --color-line-2: #9a9a9a;
+    --color-line-3: #6b6b6b;
+    --color-ink-1: #000000;
+    --color-ink-2: #262626;
+    --color-ink-3: #555555;
+    --color-accent: #000000;
+    --color-accent-hover: #000000;
+    --color-accent-press: #000000;
+    --color-good: #17663f;
+    --color-bad: #a3261a;
+    --color-accent-ink: #ffffff;
+    --color-accent-wash: transparent;
+    --color-viz-bar: #555555;
+    --color-viz-point: #000000;
+    --color-viz-zero: #000000;
+  }
+  @page {
+    margin: 16mm 14mm;
+  }
+  body {
+    min-height: 0;
+    /* The type scale is in px; 90% puts body text near 10 pt and the team guide on one A4 or Letter page. */
+    zoom: 0.9;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  #root {
+    min-height: 0;
+  }
+  h1,
+  h2,
+  h3 {
+    break-after: avoid;
+  }
+  li,
+  tr,
+  pre,
+  figure,
+  svg {
+    break-inside: avoid;
+  }
+}
