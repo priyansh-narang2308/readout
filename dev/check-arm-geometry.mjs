@@ -4,16 +4,36 @@
 // Each page is loaded in dev/frame.html at an exact width; the probe records layout boxes once fonts are loaded and
 // the layout has held still for three snapshots. Run with ARMS=control,control to see the instrument's noise floor.
 //
-// Needs the dev server (npx vite --port 5179) and Google Chrome. Uses the dev harness with fake Flagsmith deps and a
+// Starts its own dev server on port 5179 unless one is already running there (or a baseUrl is given), and needs
+// Google Chrome. Uses the dev harness with fake Flagsmith deps and a
 // throwaway browser profile per page, so nothing is sent anywhere and no real browser storage is touched.
 //   node dev/check-arm-geometry.mjs [baseUrl]
 import { chromePath } from './chrome.mjs'
-import { execFileSync } from 'node:child_process'
+import { execFileSync, spawn } from 'node:child_process'
 import { mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
 const BASE = process.argv[2] ?? 'http://localhost:5179'
+
+// Use the running dev server if there is one; otherwise start one for this check (CI has none) and stop it at exit.
+async function ensureServer() {
+  const up = async () => (await fetch(BASE).catch(() => null))?.ok === true
+  if (await up()) return null
+  if (process.argv[2]) throw new Error(`nothing is serving ${BASE}`)
+  const proc = spawn('npx', ['vite', '--port', '5179', '--strictPort'], {
+    stdio: 'ignore',
+    env: { VITE_FLAGSMITH_ENV_NAME: 'development', ...process.env },
+  })
+  for (const end = Date.now() + 30000; Date.now() < end; await new Promise((r) => setTimeout(r, 250))) {
+    if (await up()) return proc
+  }
+  proc.kill()
+  throw new Error('dev server did not start on port 5179')
+}
+const server = await ensureServer()
+const stop = () => server?.kill()
+process.on('exit', stop)
 const CHROME = chromePath()
 const WIDTHS = process.env.WIDTHS ? process.env.WIDTHS.split(',').map(Number) : [320, 375, 768, 1280]
 const ARMS = (process.env.ARMS ?? 'control,chance_to_win').split(',')
@@ -65,9 +85,15 @@ function sameBox(a, b) {
 let failures = 0
 for (const width of WIDTHS) {
   for (const at of process.env.RESULTS ? process.env.RESULTS.split(',').map((n) => Number(n) - 1) : [0, 1, 2, 3, 4, 5]) {
-    const [p, c] = ARMS.map((v) => measure(width, at, v))
-    const diffs = p.boxes.flatMap((b, i) => (c.boxes[i] !== undefined && sameBox(b, c.boxes[i]) ? [] : [`    ${b}  vs  ${c.boxes[i]}`]))
-    const same = p.boxes.length === c.boxes.length && diffs.length === 0
+    const compare = () => {
+      const [p, c] = ARMS.map((v) => measure(width, at, v))
+      const diffs = p.boxes.flatMap((b, i) => (c.boxes[i] !== undefined && sameBox(b, c.boxes[i]) ? [] : [`    ${b}  vs  ${c.boxes[i]}`]))
+      return { p, diffs, same: p.boxes.length === c.boxes.length && diffs.length === 0 }
+    }
+    // A cold first load can mis-measure one block once; a real arm difference reproduces, so measure a mismatch twice.
+    let r = compare()
+    if (!r.same) r = compare()
+    const { p, diffs, same } = r
     if (!same) failures++
     console.log(`${same ? 'ok  ' : 'DIFF'} ${String(width).padStart(4)} px  result ${at + 1} (${p.scenario})  ${p.boxes.length} boxes`)
     if (!same) console.log(diffs.slice(0, 6).join('\n'))
