@@ -1,0 +1,19 @@
+<!doctype html>
+<!-- Dev only: shows a harness URL at an exact viewport width (headless Chrome won't go below 500 px), and copies
+     the inner page's data-geom up so `--dump-dom` can read it. ?w=375&src=<encoded harness URL> -->
+<html lang="en">
+  <head><meta charset="UTF-8" /><title>frame (dev only)</title><meta name="robots" content="noindex" /></head>
+  <body style="margin:0;background:#000">
+    <iframe id="f" style="border:0;display:block;height:1000px"></iframe>
+    <script>
+      const q = new URLSearchParams(location.search)
+      const f = document.getElementById('f')
+      f.style.width = (q.get('w') || '375') + 'px'
+      f.src = q.get('src')
+      const iv = setInterval(() => {
+        const g = f.contentDocument && f.contentDocument.body && f.contentDocument.body.dataset.geom
+        if (g) { document.body.dataset.geom = g; clearInterval(iv) }
+      }, 100)
+    </script>
+  </body>
+</html>
