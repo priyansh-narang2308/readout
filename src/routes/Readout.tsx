@@ -620,14 +620,14 @@ function CallsTable({ run }: { run: ReadoutRun }) {
         <tbody>
           {rows.map(({ id, i, s, c, ok }) => (
             <tr key={id} className="border-b border-line-1 align-top">
-              <th scope="row" className="py-3 pr-3 font-normal">
+              <th scope="row" className="py-3 pr-4 font-normal whitespace-nowrap">
                 <Link to={`${run.base}/${i + 1}`} className={link}>
                   {i + 1} · {s.shortTitle}
                 </Link>
               </th>
-              <td className="py-3 pr-3 text-ink-2">{s.trap.name}</td>
-              <td className="py-3 pr-3 text-ink-1">{c ? CALL_LABEL[c] : '—'}</td>
-              <td className="py-3 pr-3 text-ink-2">{CALL_LABEL[s.key]}</td>
+              <td className="py-3 pr-4 text-ink-2">{s.trap.name}</td>
+              <td className="py-3 pr-4 text-ink-1 whitespace-nowrap">{c ? CALL_LABEL[c] : '—'}</td>
+              <td className="py-3 pr-4 text-ink-2 whitespace-nowrap">{CALL_LABEL[s.key]}</td>
               <td className="py-3">
                 <Mark ok={ok} />
               </td>

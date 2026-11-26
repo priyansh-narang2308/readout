@@ -84,5 +84,7 @@ describe('result card structure (26 §8.2 item 12)', () => {
       expect(ids[0]).not.toMatch(/\s/)
       expect(document.getElementById(ids[0]!)).not.toBeNull()
     }
+    // Lift/guardrail annotations outline the outer metric grid only, not a nested outline on the interval bar.
+    expect(container.querySelector('[data-evidence-el="interval"]')?.className ?? '').toBe('')
   })
 })

@@ -208,7 +208,7 @@ export function PresenterRoute() {
   const bar = 'h-11 rounded-control px-3 text-[14px] font-medium text-ink-2 hover:bg-bg-2 hover:text-ink-1 disabled:opacity-40 disabled:hover:bg-transparent'
 
   return (
-    <div className="flex min-h-screen flex-col bg-bg-0" data-presenter>
+    <div className="flex min-h-screen flex-col bg-bg-0 md:h-screen md:overflow-hidden" data-presenter>
       <h1 className={srOnly}>
         Presenter view, result {n} of 6: {s.title}
       </h1>

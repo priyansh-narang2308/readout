@@ -163,6 +163,13 @@ describe('presenter view', () => {
     expect(d.init).not.toHaveBeenCalled()
     expect(d.enrol).not.toHaveBeenCalled()
   })
+
+  it('the presenter stage bounds height on desktop so the bottom controls never overlap tall cards', () => {
+    app('/team/present?r=6')
+    const root = document.querySelector('[data-presenter]')!
+    expect(root.className).toContain('md:h-screen')
+    expect(root.className).toContain('md:overflow-hidden')
+  })
 })
 
 function seedFinished() {

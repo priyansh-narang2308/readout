@@ -25,8 +25,8 @@ export const LADDER: { n: number; ask: string; on: string; exit: string }[] = [
 
 const ROW = 64
 const BOX_H = 44
-const BOX_W = 330
-const EXIT_X = 430
+const BOX_W = 314
+const EXIT_X = 442
 
 /** Inline SVG, not decoration (26 §8.7): same content as the Calls line. Hidden on phones, where the list replaces it. */
 function DecisionLadder() {

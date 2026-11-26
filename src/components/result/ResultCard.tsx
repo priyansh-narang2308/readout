@@ -348,7 +348,7 @@ function MetricBlock({
               : 'col-start-1 row-start-3 mt-2',
           )}
         >
-          <IntervalBar metric={m} evidence={!!liftEvidence || !!intervalEvidence} density={density} />
+          <IntervalBar metric={m} evidence={!!intervalEvidence} density={density} />
         </div>
       </div>
       {liftEvidence && <Callout id={`${idBase}-lift-${kindSlug}`} text={liftEvidence.callout} />}

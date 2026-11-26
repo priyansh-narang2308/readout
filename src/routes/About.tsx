@@ -57,7 +57,7 @@ function Section({ id, title, children }: { id: string; title: string; children:
 const code = 'font-mono text-[0.92em] text-ink-1'
 
 // The example in "The two versions": one real card's line in both framings, computed, never typed in.
-const EX_METRIC = analyse(SCENARIOS.S5).primary
+const EX_METRIC = analyse(SCENARIOS.S3).primary
 const EX_P = inferenceText('p_value', EX_METRIC)
 const EX_C = inferenceText('chance_to_win', EX_METRIC)
 

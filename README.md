@@ -202,6 +202,15 @@ npm run dev
 
 Without a key the app still works, as practice only.
 
+### For hackathon judges and reviewers (local quick-explore)
+
+With `npm run dev` running:
+
+- **Full practice run (no Flagsmith key required):** open `http://localhost:5173/practice` or press **Practise without being measured** on `/`.
+- **Compare both Flagsmith variants directly:** open `http://localhost:5173/dev/app.html?route=/challenge&variant=control` (`p-value`) alongside `http://localhost:5173/dev/app.html?route=/challenge&variant=chance_to_win` (`Chance to beat control`).
+- **Team presenter mode:** open `http://localhost:5173/team/present` (`←`/`→`, `F` flips the inference line, `R` reveals the defensible call and trap, `Esc` returns to `/team`).
+- **Automated verification (dev + prod CSP + browser + arm layout parity):** `VITE_FLAGSMITH_ENV_NAME=development npm run check:all`.
+
 ## 14. Environment configuration
 
 | Variable                  | Value                                                                                                                                                                                    |
