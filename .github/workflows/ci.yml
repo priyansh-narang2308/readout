@@ -36,7 +36,7 @@ jobs:
 
   # The release gate (G-4): on a measured-v1 tag push, and before any Production start, the freeze must exist.
   release-gate:
-    if: startsWith(github.ref, 'refs/tags/')
+    if: github.ref == 'refs/tags/measured-v1'
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
