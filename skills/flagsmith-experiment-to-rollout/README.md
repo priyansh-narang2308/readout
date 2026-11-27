@@ -28,6 +28,7 @@ scripts/srm.mjs                sample-ratio check, no dependencies
 scripts/preflight.sh           the automated gate; exits at the first failure
 tests/run.sh                   10 tests (stub CLI, no network): sh tests/run.sh
 examples/readout-framing.md    the real experiment this workflow came from
+examples/development-run.md    end-to-end sanitized Development execution log
 ```
 
 ## 60-second demo
