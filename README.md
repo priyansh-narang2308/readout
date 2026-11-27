@@ -67,6 +67,8 @@ Both lines are computed from the same counts by the same model, a port of Flagsm
 
 ## 7. Architecture
 
+![Readout System Architecture & Flagsmith Telemetry](docs/assets/architecture.jpg)
+
 ```mermaid
 flowchart LR
   subgraph Browser["Player's browser (static React app)"]
